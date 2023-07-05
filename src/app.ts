@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
+import instanceMongodb from '../src/dbs/init.mongodb';
+import { checOverload } from './helpers/check.connect'
 const app = express();
 
 // init middlewares
@@ -9,8 +11,10 @@ const app = express();
 app.use(morgan('combined'));
 app.use(helmet());
 app.use(compression());
-// init database
 
+// init database
+instanceMongodb;
+// checOverload();
 // init routes
 app.get('/test', (_req: Request, res: Response) => {
   const strCompress = 'Hello every body'
