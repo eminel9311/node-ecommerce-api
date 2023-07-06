@@ -8,7 +8,7 @@ const DB_PORT="27017"
 const DB_NAME="node_ecommerce_api"
 const connectString = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/?authMechanism=SCRAM-SHA-1`;
 class Database {
-  static instance: any;
+  static instance: Database;
   constructor() {
     this.connect();
   }

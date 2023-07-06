@@ -14,7 +14,7 @@ app.use(compression());
 
 // init database
 instanceMongodb;
-// checOverload();
+checOverload();
 // init routes
 app.get('/test', (_req: Request, res: Response) => {
   const strCompress = 'Hello every body'
