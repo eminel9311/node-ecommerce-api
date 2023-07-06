@@ -8,7 +8,7 @@ cd server
 npm install
 npm run dev
 </pre>
-## BUỔI 1
+## STEP 1
 1. Install the required dependencies by running the following command:
 <pre>
 npm install typescript ts-node @types/node --save-dev
@@ -47,7 +47,7 @@ helmet: ẩn các thông tin nhạy cảm của server
 compression: nén dung lượng compress
 </pre>
 
-## BUỔI 2
+## STEP 2
 1. Sử dụng singleton pattern để connect database
 <pre>
 class Database {
@@ -123,3 +123,5 @@ const checOverload = () => {
 - khi nào không sử dụng thì 50 connection sẽ nằm im, khi cần sử dụng sẽ được active lên để sử dụng.
 - Nếu có quá nhiều kết nối vượt quá 50 connection thì các connection vượt quá thì sẽ phải xếp hàng,
   kết nối nào free thì mới được push vào để giải quyết
+
+## STEP 3

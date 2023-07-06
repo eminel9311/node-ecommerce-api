@@ -1,12 +1,10 @@
 import mongoose from 'mongoose';
 import { countConnect } from '../helpers/check.connect';
+import config from '../configs/config';
 
-const DB_USER="admin"
-const DB_PASSWORD="Conga%401102"
-const DB_HOST="139.162.20.197"
-const DB_PORT="27017"
-const DB_NAME="node_ecommerce_api"
-const connectString = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/?authMechanism=SCRAM-SHA-1`;
+const { host, port, name, user, password } = config.db;
+
+const connectString = `mongodb://${user}:${password}@${host}:${port}/?authMechanism=SCRAM-SHA-1`;
 class Database {
   static instance: Database;
   constructor() {
@@ -26,7 +24,7 @@ class Database {
       serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
       family: 4, // Use IPv4, skip trying IPv6
-      dbName: DB_NAME,
+      dbName: name,
     };
     mongoose
       .connect(connectString, options)
