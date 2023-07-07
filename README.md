@@ -1,14 +1,18 @@
 # NODEJS E-COMMERCE-API
 
 ## TECH STACK
+
 - Node.js (ver 19.9) + Mongodb + mongoose
+
 1. Install the required dependencies by running the following command:
 <pre>
 cd server
 npm install
 npm run dev
 </pre>
-## STEP 1
+
+## NOTICE 1
+
 1. Install the required dependencies by running the following command:
 <pre>
 npm install typescript ts-node @types/node --save-dev
@@ -47,7 +51,8 @@ helmet: ẩn các thông tin nhạy cảm của server
 compression: nén dung lượng compress
 </pre>
 
-## STEP 2
+## NOTICE 2
+
 1. Sử dụng singleton pattern để connect database
 <pre>
 class Database {
@@ -120,8 +125,42 @@ const checOverload = () => {
 <pre>
   maxPoolSize: 50, // Maintain up to 10 socket connections
 </pre>
+
 - khi nào không sử dụng thì 50 connection sẽ nằm im, khi cần sử dụng sẽ được active lên để sử dụng.
 - Nếu có quá nhiều kết nối vượt quá 50 connection thì các connection vượt quá thì sẽ phải xếp hàng,
   kết nối nào free thì mới được push vào để giải quyết
 
-## STEP 3
+## NOTICE 3
+1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file .d.ts và sử dụng khai báo global{} để mở rộng đối tượng toàn cục.
+Ở file `src/types/index.d.ts` trông như thế này
+<pre>
+/* eslint-disable no-var */
+
+declare global {
+  var intervalIds: any;
+}
+
+export {};
+
+</pre>
+
+Lưu ý rằng chúng ta vẫn có thể gặp lỗi ở teminal nếu sử dụng ts-node.Để giải quyết vấn đề hãy sử dụng cờ `--files` với lệnh `ts-node`, vì vậy thay vì sử dụng lệnh sau
+`ts-node ./src/index.ts` bạn nên chạy với lệnh `ts-node --files ./src/index.ts`.
+Trong project này tôi sử dụng `nodemon` với `ts-node` và đây là nội dung file `nodeemon.json` được chỉnh sửa lại như sau:
+
+<pre>
+{
+  "watch": ["src"],
+  "ext": ".ts .js",
+  "ignore": [],
+  "exec": "ts-node --files ./src/server.ts"
+}
+</pre>
+
+Bây giờ chúng ta có thể sử dụng biến global như đoạn code sau
+
+<pre>
+const listIntervalId = [];
+listIntervalId.push(intervalId);
+global.intervalIds = listIntervalId;
+</pre>

@@ -39,4 +39,3 @@ class Database {
 }
 const instanceMongodb = Database.getInstance();
 export default instanceMongodb;
-
