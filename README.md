@@ -131,7 +131,7 @@ const checOverload = () => {
   kết nối nào free thì mới được push vào để giải quyết
 
 ## NOTICE 3
-1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file .d.ts và sử dụng khai báo global{} để mở rộng đối tượng toàn cục.
+1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file `.d.ts` và sử dụng khai báo `declare global{}` để mở rộng đối tượng toàn cục.
 Ở file `src/types/index.d.ts` trông như thế này
 <pre>
 /* eslint-disable no-var */
@@ -144,7 +144,7 @@ export {};
 
 </pre>
 
-Lưu ý rằng chúng ta vẫn có thể gặp lỗi ở teminal nếu sử dụng ts-node.Để giải quyết vấn đề hãy sử dụng cờ `--files` với lệnh `ts-node`, vì vậy thay vì sử dụng lệnh sau
+Lưu ý rằng chúng ta vẫn có thể gặp lỗi ở teminal nếu sử dụng `ts-node`.Để giải quyết vấn đề hãy sử dụng cờ `--files` với lệnh `ts-node`, vì vậy thay vì sử dụng lệnh sau
 `ts-node ./src/index.ts` bạn nên chạy với lệnh `ts-node --files ./src/index.ts`.
 Trong project này tôi sử dụng `nodemon` với `ts-node` và đây là nội dung file `nodeemon.json` được chỉnh sửa lại như sau:
 
@@ -164,3 +164,5 @@ const listIntervalId = [];
 listIntervalId.push(intervalId);
 global.intervalIds = listIntervalId;
 </pre>
+
+Xem thêm tại đây: https://bobbyhadz.com/blog/typescript-declare-global-variable
