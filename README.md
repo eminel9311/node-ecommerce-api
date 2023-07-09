@@ -131,13 +131,14 @@ const checOverload = () => {
   kết nối nào free thì mới được push vào để giải quyết
 
 ## NOTICE 3
+
 1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file `.d.ts` và sử dụng khai báo `declare global{}` để mở rộng đối tượng toàn cục.
 Ở file `src/types/index.d.ts` trông như thế này
 <pre>
 /* eslint-disable no-var */
 
 declare global {
-  var intervalIds: any;
+var intervalIds: any;
 }
 
 export {};

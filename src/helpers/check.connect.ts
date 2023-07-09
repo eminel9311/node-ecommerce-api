@@ -12,7 +12,7 @@ const countConnect = () => {
 };
 // check over load
 
-const checOverload = () => {
+const checkOverload = () => {
   const intervalId = setInterval(() => {
     const numConnection = mongoose.connections.length;
     const numCores = os.cpus().length;
@@ -30,4 +30,4 @@ const checOverload = () => {
   listIntervalId.push(intervalId);
   global.intervalIds = listIntervalId;
 };
-export { countConnect, checOverload };
+export { countConnect, checkOverload };

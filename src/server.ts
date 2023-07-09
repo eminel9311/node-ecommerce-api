@@ -7,10 +7,11 @@ const server = app.listen(PORT, () => {
 
 process.on('SIGINT', () => {
   const intervalIDs = global.intervalIds;
-  intervalIDs.forEach(function (intervalID: number) {
-    console.log('intervalID', intervalID)
-    clearInterval(intervalID);
-  });
-  global.intervalIds = [];
+  if (intervalIDs && intervalIDs.length > 0) {
+    intervalIDs.forEach(function (intervalID: number) {
+      clearInterval(intervalID);
+    });
+    global.intervalIds = [];
+  }
   server.close(() => console.log(`Exit Server Express`));
 });
