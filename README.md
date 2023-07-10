@@ -167,3 +167,88 @@ global.intervalIds = listIntervalId;
 </pre>
 
 Xem thêm tại đây: https://bobbyhadz.com/blog/typescript-declare-global-variable
+
+## NOTICE 4
+
+1. Tổng quan về xác thực token nâng cao
+   ![Alt text](image.png)
+Giải thích về kiến trúc. Ở đây tôi dev chức năng signup, ban đầu tạo service access để handle các yêu cầu về đăng nhập, đăng ký.
+  - Khi user request signup, login
+  - Server sử dụng thuật toán RSA để tạo 1 cặp private key và public key định dạng `.pem` là định dạng mã hõa binary.
+  - Server lưu public key vào database, private key không cần lưu vào database.
+  - Server sử dụng private key để ký lên payload để tạo ra 1 cặp tokens access-token và refresh-token.
+  - Server gửi lại access-token và refresh-token cho client.
+  - Client khi gửi request lên server thì gửi kèm với access-token.Server sử dụng public key được lưu ở database lên để verify.Nếu đúng thì thì user sẽ được sử dụng resource của hệ thống.
+2. Cài đặt các thư viện
+<pre>
+  npm i crypto
+  npm i jsonwebtoken
+
+</pre>
+
+3. Tạo cặp public key và private key
+<pre>
+  const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+      type: 'pkcs1',
+      format: 'pem',
+    },
+    privateKeyEncoding: {
+      type: 'pkcs1',
+      format: 'pem',
+    }
+  });
+</pre>
+
+4. Lưu public key vào database
+<pre>
+static createKeyToken = async ({ userId, publicKey }: any) => {
+  try {
+    //publicKey is buffer => convert to string
+    const publicKeyString = publicKey.toString();
+    const tokens = await keytokenModel.create({
+      user: userId,
+      publicKey: publicKeyString,
+    });
+    return tokens ? tokens.publicKey : null;
+  } catch (error) {
+    return error;
+  }
+};
+</pre>
+
+5. Khi lấy public key từ database lên phải convert sang kiểu buffer vì key đang được lưu ở định dạng string
+<pre>
+  const publicKeyObject = crypto.createPublicKey(publicKeyString);
+</pre>
+
+6. Tạo bộ access-token và refresh-token
+<pre>
+const createTokenPair = async (payload: any, publicKey: any, privateKey: any) => {
+  try {
+    // access token
+    const accessToken = JWT.sign(payload, privateKey, {
+      algorithm: 'RS256',
+      expiresIn: '2 days',
+    });
+    // refresh token
+    const refreshToken = JWT.sign(payload, privateKey, {
+      algorithm: 'RS256',
+      expiresIn: '7 days',
+    });
+    // verify
+    JWT.verify(accessToken, publicKey, (err: any, decode: any) => {
+      if (err) {
+        console.log(`error verify::`, err);
+      } else {
+        console.log(`decode verify::`, decode);
+      }
+    });
+    return { accessToken, refreshToken };
+  } catch (error) {
+    return error;
+  }
+};
+
+</pre>

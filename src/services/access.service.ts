@@ -21,8 +21,7 @@ class AccessService {
           message: 'Shop already registered',
         };
       }
-      const algorithmDifficultyHash = 10;
-      const passwordHash = await bcript.hash(password, algorithmDifficultyHash);
+      const passwordHash = await bcript.hash(password, 10);
       const newShop = await shopModel.create({
         name,
         email,
@@ -53,7 +52,7 @@ class AccessService {
             message: 'publicKeyString error',
           };
         };
-        const publicKeyObject = crypto.createPublicKey(publicKeyString)
+        const publicKeyObject = crypto.createPublicKey(publicKeyString);
         // create token pair
         const tokens = await createTokenPair(
           { userId: newShop._id, email },

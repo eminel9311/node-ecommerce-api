@@ -11,7 +11,7 @@ const createTokenPair = async (payload: any, publicKey: any, privateKey: any) =>
       algorithm: 'RS256',
       expiresIn: '7 days',
     });
-    //
+    // verify
     JWT.verify(accessToken, publicKey, (err: any, decode: any) => {
       if (err) {
         console.log(`error verify::`, err);
