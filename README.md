@@ -5,24 +5,24 @@
 - Node.js (ver 19.9) + Mongodb + mongoose
 
 1. Install the required dependencies by running the following command:
-<pre>
+```TypeScript
 cd server
 npm install
 npm run dev
-</pre>
+```
 
 ## NOTICE 1
 
 1. Install the required dependencies by running the following command:
-<pre>
+```TypeScript
 npm install typescript ts-node @types/node --save-dev
-</pre>
+```
 2. Tạo tệp cấu hình TypeScript `tsconfig.json`
-<pre>
+```TypeScript
 npx tsc --init
-</pre>
+```
 3. Mở tệp tsconfig.json và chỉnh sửa các giá trị sau:
-<pre>
+```TypeScript
 {
   "compilerOptions": {
     "target": "es6",
@@ -43,18 +43,18 @@ npx tsc --init
   "include": ["src"],
   "exclude": ["node_modules"]
 }
-</pre>
+```
 4. Giải thích một số thư viện sử dụng trong project
-<pre>
+```TypeScript
 morgan: sử dụng để log thông tin request
 helmet: ẩn các thông tin nhạy cảm của server
 compression: nén dung lượng compress
-</pre>
+```
 
 ## NOTICE 2
 
 1. Sử dụng singleton pattern để connect database
-<pre>
+```TypeScript
 class Database {
   static instance: Database;
   constructor() {
@@ -89,20 +89,20 @@ class Database {
 }
 const instanceMongodb = Database.getInstance();
 export default instanceMongodb;
-</pre>
+```
 
 2. Kiểm tra hệ thống có bao nhiêu connect
-<pre>
+```TypeScript
 // count connect
 const countConnect = () => {
   const numConnection = mongoose.connections.length;
   console.log(`Number of connection:: ${numConnection}`);
   return numConnection;
 };
-</pre>
+```
 
 3. Thông báo khi server quá tải
-<pre>
+```TypeScript
 const checOverload = () => {
   setInterval(() => {
     const numConnection = mongoose.connections.length;
@@ -118,13 +118,13 @@ const checOverload = () => {
     }
   }, _SECONDS) // Monitor every 5 seconds
 }
-</pre>
+```
 
 4. Ở mongoose kết nối mongodb không cần đóng kết nối vì đã sử dụng pool
 5. PoolSize là gì?
-<pre>
+```TypeScript
   maxPoolSize: 50, // Maintain up to 10 socket connections
-</pre>
+```
 
 - khi nào không sử dụng thì 50 connection sẽ nằm im, khi cần sử dụng sẽ được active lên để sử dụng.
 - Nếu có quá nhiều kết nối vượt quá 50 connection thì các connection vượt quá thì sẽ phải xếp hàng,
@@ -134,7 +134,7 @@ const checOverload = () => {
 
 1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file `.d.ts` và sử dụng khai báo `declare global{}` để mở rộng đối tượng toàn cục.
 Ở file `src/types/index.d.ts` trông như thế này
-<pre>
+```TypeScript
 /* eslint-disable no-var */
 
 declare global {
@@ -143,28 +143,28 @@ var intervalIds: any;
 
 export {};
 
-</pre>
+```
 
 Lưu ý rằng chúng ta vẫn có thể gặp lỗi ở teminal nếu sử dụng `ts-node`.Để giải quyết vấn đề hãy sử dụng cờ `--files` với lệnh `ts-node`, vì vậy thay vì sử dụng lệnh sau
 `ts-node ./src/index.ts` bạn nên chạy với lệnh `ts-node --files ./src/index.ts`.
 Trong project này tôi sử dụng `nodemon` với `ts-node` và đây là nội dung file `nodeemon.json` được chỉnh sửa lại như sau:
 
-<pre>
+```TypeScript
 {
   "watch": ["src"],
   "ext": ".ts .js",
   "ignore": [],
   "exec": "ts-node --files ./src/server.ts"
 }
-</pre>
+```
 
 Bây giờ chúng ta có thể sử dụng biến global như đoạn code sau
 
-<pre>
+```TypeScript
 const listIntervalId = [];
 listIntervalId.push(intervalId);
 global.intervalIds = listIntervalId;
-</pre>
+```
 
 Xem thêm tại đây: https://bobbyhadz.com/blog/typescript-declare-global-variable
 
@@ -180,14 +180,14 @@ Giải thích về kiến trúc. Ở đây tôi dev chức năng signup, ban đ�
   - Server gửi lại access-token và refresh-token cho client.
   - Client khi gửi request lên server thì gửi kèm với access-token.Server sử dụng public key được lưu ở database lên để verify.Nếu đúng thì thì user sẽ được sử dụng resource của hệ thống.
 2. Cài đặt các thư viện
-<pre>
+```TypeScript
   npm i crypto
   npm i jsonwebtoken
 
-</pre>
+```
 
 3. Tạo cặp public key và private key
-<pre>
+```TypeScript
   const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
@@ -199,10 +199,10 @@ Giải thích về kiến trúc. Ở đây tôi dev chức năng signup, ban đ�
       format: 'pem',
     }
   });
-</pre>
+```
 
 4. Lưu public key vào database
-<pre>
+```TypeScript
 static createKeyToken = async ({ userId, publicKey }: any) => {
   try {
     //publicKey is buffer => convert to string
@@ -216,15 +216,15 @@ static createKeyToken = async ({ userId, publicKey }: any) => {
     return error;
   }
 };
-</pre>
+```
 
 5. Khi lấy public key từ database lên phải convert sang kiểu buffer vì key đang được lưu ở định dạng string
-<pre>
+```TypeScript
   const publicKeyObject = crypto.createPublicKey(publicKeyString);
-</pre>
+```
 
 6. Tạo bộ access-token và refresh-token
-<pre>
+```TypeScript
 const createTokenPair = async (payload: any, publicKey: any, privateKey: any) => {
   try {
     // access token
@@ -251,4 +251,4 @@ const createTokenPair = async (payload: any, publicKey: any, privateKey: any) =>
   }
 };
 
-</pre>
+```
