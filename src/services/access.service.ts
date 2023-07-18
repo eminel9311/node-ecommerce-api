@@ -31,26 +31,24 @@ class AccessService {
       });
       if (newShop) {
         // created privateKey, publicKey
-        const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-          modulusLength: 4096,
-        });
-        console.log({ privateKey, publicKey }); // save collection KeyStore
-        const publicKeyString = await KeyTokenService.createKeyToken({
+        const privateKey = crypto.randomBytes(64).toString('hex');
+        const publicKey = crypto.randomBytes(64).toString('hex');
+        console.log('rawKey', { privateKey, publicKey });
+
+        const keyStore = await KeyTokenService.createKeyToken({
           userId: newShop._id,
           publicKey,
+          privateKey,
         });
-        if (!publicKeyString) {
+        if (!keyStore) {
           return {
             code: 400,
-            message: 'publicKeyString error',
+            message: 'keyStore error',
           };
         }
+
         // create token pair
-        const tokens = await createTokenPair(
-          { userId: newShop._id, email, publicKey },
-          publicKey,
-          privateKey
-        );
+        const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey);
         console.log(`Created Token succees::`, tokens);
         return {
           code: 201,
@@ -65,7 +63,7 @@ class AccessService {
         metadata: null,
       };
     } catch (error: any) {
-      console.log('errr', error)
+      console.log('errr', error);
       return {
         code: '400',
         message: error.message,

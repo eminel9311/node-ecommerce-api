@@ -1,10 +1,13 @@
 # NODEJS E-COMMERCE-API
 
+https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml
+
 ## TECH STACK
 
 - Node.js (ver 19.9) + Mongodb + mongoose
 
-1. Install the required dependencies by running the following command:
+1. Cài đặt các gói yêu cầu:
+
 ```TypeScript
 cd server
 npm install
@@ -13,15 +16,20 @@ npm run dev
 
 ## NOTICE 1
 
-1. Install the required dependencies by running the following command:
+1. Cài đặt các gói yêu cầu:
+
 ```TypeScript
 npm install typescript ts-node @types/node --save-dev
 ```
+
 2. Tạo tệp cấu hình TypeScript `tsconfig.json`
+
 ```TypeScript
 npx tsc --init
 ```
+
 3. Mở tệp tsconfig.json và chỉnh sửa các giá trị sau:
+
 ```TypeScript
 {
   "compilerOptions": {
@@ -44,7 +52,9 @@ npx tsc --init
   "exclude": ["node_modules"]
 }
 ```
+
 4. Giải thích một số thư viện sử dụng trong project
+
 ```TypeScript
 morgan: sử dụng để log thông tin request
 helmet: ẩn các thông tin nhạy cảm của server
@@ -54,6 +64,7 @@ compression: nén dung lượng compress
 ## NOTICE 2
 
 1. Sử dụng singleton pattern để connect database
+
 ```TypeScript
 class Database {
   static instance: Database;
@@ -92,6 +103,7 @@ export default instanceMongodb;
 ```
 
 2. Kiểm tra hệ thống có bao nhiêu connect
+
 ```TypeScript
 // count connect
 const countConnect = () => {
@@ -102,6 +114,7 @@ const countConnect = () => {
 ```
 
 3. Thông báo khi server quá tải
+
 ```TypeScript
 const checOverload = () => {
   setInterval(() => {
@@ -122,6 +135,7 @@ const checOverload = () => {
 
 4. Ở mongoose kết nối mongodb không cần đóng kết nối vì đã sử dụng pool
 5. PoolSize là gì?
+
 ```TypeScript
   maxPoolSize: 50, // Maintain up to 10 socket connections
 ```
@@ -133,7 +147,8 @@ const checOverload = () => {
 ## NOTICE 3
 
 1. Để khai báo một biến toàn cục trong typescript, hãy tạo 1 file `.d.ts` và sử dụng khai báo `declare global{}` để mở rộng đối tượng toàn cục.
-Ở file `src/types/index.d.ts` trông như thế này
+   Ở file `src/types/index.d.ts` trông như thế này
+
 ```TypeScript
 /* eslint-disable no-var */
 
