@@ -7,7 +7,7 @@ const router = express.Router();
 // check apiKey
 router.use(apiKey);
 // check permission
-router.use(permission('0000'))
+router.use(permission('0001'));
 router.use('/v1/api', accessRoute);
 
 export default router;

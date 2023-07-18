@@ -1,53 +1,50 @@
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { findById } from '../services/apiKey.service';
+import { ForbindenRequestError } from '../core/error.response';
 
 const HEADER = {
   API_KEY: 'x-api-key',
   AUTHORIZATION: 'authorization',
 };
-const apiKey = async (req: any, res: any, next: any) => {
-  try {
-    const key = req.headers[HEADER.API_KEY]?.toString();
-    if (!key) {
-      return res.status(403).json({
-        message: 'Forbinden Error',
-      });
-    }
-    // check objKey
-
-    const objKey = await findById(key);
-    if (!objKey) {
-      return res.status(403).json({
-        message: 'Forbinden Error',
-      });
-    };
-    req.objKey = objKey;
-    return next();
-  } catch (error) {
-    console.log(error);
+interface CustomRequest extends Request {
+  objKey?: {
+    key?: string;
+    status?: boolean;
+    permission?: string[];
+    
+  };
+}
+const apiKey = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  const key = req.headers[HEADER.API_KEY]?.toString();
+  if (!key) {
+    throw new ForbindenRequestError('apiKey not found!');
   }
+  // check objKey
+  const objKey = await findById(key);
+  if (!objKey) {
+    throw new ForbindenRequestError('objKey not found!');
+  }
+  req.objKey = objKey;
+  return next();
 };
 
-const permission = (requiredPermission: any) => {
-  return (req: any, res: any, next: any) => {
-    console.log('req.objKey', req.objKey)
-
+const permission = (requiredPermission: string) => {
+  return (req: CustomRequest, _res: Response, next: NextFunction) => {
     if (!req.objKey || !req.objKey.permission) {
-      return res.status(403).json({
-        message: 'Permission denied'
-      });
+      throw new ForbindenRequestError('objKey error!');
     }
-
     const validPermission = req.objKey.permission.includes(requiredPermission);
-
     if (!validPermission) {
-      return res.status(403).json({
-        message: 'Permission denied'
-      });
+      throw new ForbindenRequestError('valid permission false!');
     }
-
     return next();
   };
 };
 
+const asyncHandler = (fn: RequestHandler) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
 
-export { apiKey,permission };
+export { apiKey, permission, asyncHandler };

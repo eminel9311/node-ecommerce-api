@@ -1,10 +1,11 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
 import instanceMongodb from './dbs/init.mongodb';
-import { checkOverload } from './helpers/check.connect';
+// import { checkOverload } from './helpers/check.connect';
 import router from './routes/index';
+import { ErrorResponse, NotFoundRequestError } from './core/error.response';
 
 const app = express();
 // init middlewares
@@ -22,6 +23,7 @@ app.use(
 // init database
 instanceMongodb;
 // checkOverload();
+
 // init routes
 app.use('', router);
 // app.get('/test', (_req: Request, res: Response) => {
@@ -31,6 +33,20 @@ app.use('', router);
 //     metadata: strCompress.repeat(100000),
 //   });
 // });
-// handling error
 
+// handling error
+app.use((_req: Request, _res: Response, next: NextFunction) => {
+  const error: NotFoundRequestError  = new NotFoundRequestError();
+  next(error);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((error: ErrorResponse, _req: Request, _res: Response, _next: NextFunction) => {
+  const statusCode = error.status || 500;
+  return _res.status(statusCode).json({
+    status: 'error',
+    code: statusCode,
+    message: error.message || 'Internal Server Error',
+  });
+});
 export default app;
