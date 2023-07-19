@@ -6,4 +6,5 @@ const accessRoute = express.Router();
 
 accessRoute.post('/shop/signup', asyncHandler(AccessController.signUp));
 
+
 export default accessRoute;

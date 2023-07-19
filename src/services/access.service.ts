@@ -11,8 +11,13 @@ const roleShop = {
   EDITOR: 'EDITOR',
   ADMIN: 'ADMIN',
 };
+interface SignupReqProperty {
+  name: string;
+  email: string;
+  password: string
+}
 class AccessService {
-  static signUp = async ({ name, email, password }: any) => {
+  static signUp = async ({ name, email, password }: SignupReqProperty) => {
     // step1: check email exists?
     const hodelShop = await shopModel.findOne({ email }).lean();
     if (hodelShop) {

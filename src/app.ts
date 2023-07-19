@@ -36,7 +36,7 @@ app.use('', router);
 
 // handling error
 app.use((_req: Request, _res: Response, next: NextFunction) => {
-  const error: NotFoundRequestError  = new NotFoundRequestError();
+  const error: NotFoundRequestError = new NotFoundRequestError();
   next(error);
 });
 

@@ -11,7 +11,6 @@ interface CustomRequest extends Request {
     key?: string;
     status?: boolean;
     permission?: string[];
-    
   };
 }
 const apiKey = async (req: CustomRequest, res: Response, next: NextFunction) => {

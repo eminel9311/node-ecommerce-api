@@ -182,3 +182,145 @@ global.intervalIds = listIntervalId;
 ```
 
 Xem thêm tại đây: https://bobbyhadz.com/blog/typescript-declare-global-variable
+
+
+## NOTICE 4
+1. Custom error response 
+Để custom được error response đầu tiên phải viết handle ở phía dưới route
+```TypeScript
+// handling error app.ts
+app.use((_req: Request, _res: Response, next: NextFunction) => {
+  const error: NotFoundRequestError = new NotFoundRequestError();
+  next(error);
+});
+
+```
+Đoạn code trên là 1 middleware tức là nếu thành công thì đi tiếp còn không thì làm gì tiếp theo.
+Dưới đây là hàm để quản lý các error
+
+```TypeScript
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((error: ErrorResponse, _req: Request, _res: Response, _next: NextFunction) => {
+  const statusCode = error.status || 500;
+  return _res.status(statusCode).json({
+    status: 'error',
+    code: statusCode,
+    message: error.message || 'Internal Server Error',
+  });
+});
+```
+2. Tiếp theo viết class để xử lý các error
+Vì Error được nodejs hỗ trợ sẵn nên chúng ta kế thừa nó để viết các hàm handle custom của chúng ta
+```TypeScript
+class ErrorResponse extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+```
+Các hàm handle các lỗi khác nhau sẽ kế thừa `ErrorResponse` ở phía trên
+```TypeScript
+class ConflictRequestError extends ErrorResponse {
+  constructor(
+    message = HttpStatusCode.ReasonPhrases.CONFLICT,
+    StatusCode = HttpStatusCode.StatusCodes.CONFLICT
+  ) {
+    super(message, StatusCode);
+  }
+}
+```
+3. Để sử dụng các method handle error chỉ cần khai báo và sử dụng như sau
+```TypeScript
+import { BadRequestError, ConflictRequestError } from '../core/error.response';
+
+if (hodelShop) {
+  throw new ConflictRequestError('Shop already registered!');
+}
+```
+4. Tuy nhiên nếu code như trên nếu gặp lỗi thì app sẽ bị ném thẳng ra và dừng app, rất nguy hiểm vì vậy cần xử lý thêm để bắt được throw thì catch nó và in ra lỗi.Viết thêm 1 middleware để bao hàm xử lý throw ra lỗi như sau:
+```TypeScript
+const asyncHandler = (fn: RequestHandler) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
+```
+ở router access thêm đoạn code để handle throw như sau
+```TypeScript
+import { asyncHandler } from '../../auth/checkAuth';
+
+accessRoute.post('/shop/signup', asyncHandler(AccessController.signUp));
+
+```
+
+## NOTICE 5
+1. Để custom success response ta làm như sau:
+- Tạo 1 class để handle các loại success
+```TypeScript
+class SuccessResponse {
+  message: string;
+  status: number;
+  metadata: object;
+  constructor({
+    message,
+    statusCode = HttpStatusCode.StatusCodes.OK,
+    reasonStatusCode = HttpStatusCode.ReasonPhrases.OK,
+    metadata = {},
+  }: responseProperty) {
+    this.message = !message ? reasonStatusCode : message;
+    this.status = statusCode;
+    this.metadata = metadata;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  send(res: Response, _headers = {}) {
+    return res.status(this.status).json(this);
+  }
+}
+```
+
+- đoạn mã return `res.status(this.status).json(this);` trong phương thức send của lớp SuccessResponse sẽ lấy tất cả các giá trị của đối tượng SuccessResponse và đưa chúng vào trong phản hồi HTTP (response) để gửi về client.
+
+Khi phương thức send được gọi, nó sẽ thực hiện hai việc:
+
++ `res.status(this.status)`: Đặt mã trạng thái của phản hồi HTTP bằng giá trị của thuộc tính status trong đối tượng SuccessResponse. Điều này xác định mã trạng thái của phản hồi HTTP, ví dụ: 200 cho thành công, 404 cho không tìm thấy, vv.
+
++ `.json(this)`: Chuyển đối tượng SuccessResponse thành chuỗi JSON và gửi nó lại cho client thông qua phản hồi HTTP. Điều này cho phép client nhận được thông tin từ đối tượng SuccessResponse, bao gồm message, status, và metadata, dưới dạng dữ liệu JSON.
+
+2. Viết riêng từng phương thức để xử lý các trường hợp success
+```TypeScript
+class CREATED extends SuccessResponse {
+  options: object;
+  constructor({
+    options={},
+    message,
+    statusCode = HttpStatusCode.StatusCodes.CREATED,
+    reasonStatusCode = HttpStatusCode.ReasonPhrases.CREATED,
+    metadata = {},
+  }: responseProperty) {
+    super({ message, statusCode, reasonStatusCode, metadata });
+    this.options = options;
+  }
+}
+
+```
+3. Ở controller thì khai báo và sử dụng như sau
+```TypeScript
+import { CREATED } from '../core/success.response';
+
+class AccessController {
+  signUp = async (req: Request, res: Response) => {
+    new CREATED({
+      message: 'Regiserted OK!',
+      metadata: await AccessService.signUp(req.body),
+      options: {
+        page: 1,
+        limit: 10
+      }
+    }).send(res);
+  };
+}
+
+```

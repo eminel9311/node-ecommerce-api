@@ -43,4 +43,10 @@ class NotFoundRequestError extends ErrorResponse {
   }
 }
 
-export { ErrorResponse, ConflictRequestError, BadRequestError, ForbindenRequestError, NotFoundRequestError };
+export {
+  ErrorResponse,
+  ConflictRequestError,
+  BadRequestError,
+  ForbindenRequestError,
+  NotFoundRequestError,
+};
