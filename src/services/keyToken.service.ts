@@ -17,16 +17,16 @@ class KeyTokenService {
       // });
       // return tokens;
 
-      const filter = {user: userId};
+      const filter = { user: userId };
       const update = {
-        publicKey, 
-        privateKey, 
-        refreshTokenUsed: [], 
-        refreshToken
+        publicKey,
+        privateKey,
+        refreshTokensUsed: [],
+        refreshToken,
       };
-      const options = { upsert: true, new: true};
+      const options = { upsert: true, new: true };
       const tokens = await keytokenModel.findOneAndUpdate(filter, update, options);
-      return tokens ? tokens.publicKey : null
+      return tokens ? tokens.publicKey : null;
     } catch (error) {
       return error;
     }

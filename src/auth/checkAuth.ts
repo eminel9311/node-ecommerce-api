@@ -13,7 +13,22 @@ interface CustomRequest extends Request {
     permission?: string[];
   };
 }
-const apiKey = async (req: CustomRequest, res: Response, next: NextFunction) => {
+
+// Higher-order function middlewareWrapper
+const middlewareWrapper = (
+  middlewareFn: (req: CustomRequest, _res: Response, next: NextFunction) => Promise<any>
+) => {
+  return async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      await middlewareFn(req, res, next);
+    } catch (error) {
+      // Xử lý ngoại lệ tại đây nếu cần thiết
+      next(error); // Chuyển ngoại lệ tới middleware xử lý lỗi
+    }
+  };
+};
+
+const apiKey = async (req: CustomRequest, _res: Response, next: NextFunction) => {
   const key = req.headers[HEADER.API_KEY]?.toString();
   if (!key) {
     throw new ForbindenRequestError('apiKey not found!');
@@ -40,10 +55,12 @@ const permission = (requiredPermission: string) => {
   };
 };
 
+const wrappedApiKey = middlewareWrapper(apiKey);
+
 const asyncHandler = (fn: RequestHandler) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };
 
-export { apiKey, permission, asyncHandler };
+export { wrappedApiKey, permission, asyncHandler };

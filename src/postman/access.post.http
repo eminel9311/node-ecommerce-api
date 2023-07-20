@@ -2,10 +2,10 @@
 ### signup
 POST {{url_dev}}/shop/signup
 Content-Type: application/json
-x-api-key: 42026472b8ebb5fa19bb95a8778d3aac44a6b2c157b518f84266c013e302518bd78cce1bfd2663c9a0001b2fdfdfcfc2fad4df80bddb5e4d2c51c03150363130
+x-api-key: 
 
 {
-  "name": "Shop QuanBH 7",
-  "email": "shopquanbh7@gmail.com",
+  "name": "Shop QuanBH 1",
+  "email": "shopquanbh1@gmail.com",
   "password": "abc@1234"
 }

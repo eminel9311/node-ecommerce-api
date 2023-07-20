@@ -3,10 +3,13 @@ import bcript from 'bcrypt';
 import crypto from 'crypto';
 import KeyTokenService from './keyToken.service';
 import { createTokenPair } from '../auth/authUtils';
-import { BadRequestError, ConflictRequestError, AuthFailureRequestError } from '../core/error.response';
+import {
+  BadRequestError,
+  ConflictRequestError,
+  AuthFailureRequestError,
+} from '../core/error.response';
 import { findByEmail } from './shop.service';
 import { GenKeyPair, getInfoData } from '../utils';
-
 
 const roleShop = {
   SHOP: 'SHOP',
@@ -17,12 +20,12 @@ const roleShop = {
 interface SignupProperty {
   name: string;
   email: string;
-  password: string
+  password: string;
 }
 interface LoginProperty {
   email: string;
   password: string;
-  refreshToken?: string; 
+  refreshToken?: string;
 }
 class AccessService {
   // 1 - check email in dbs
@@ -31,20 +34,24 @@ class AccessService {
   // 4 - generate tokens
   // 5 - get data return login
 
-  static login = async ({email, password, refreshToken=''}: LoginProperty) => {
+  static login = async ({ email, password, refreshToken = '' }: LoginProperty) => {
     //1.
-    const foundShop = await findByEmail({email});
-    if(!foundShop) throw new BadRequestError('Shop not registered!');
+    const foundShop = await findByEmail({ email });
+    if (!foundShop) throw new BadRequestError('Shop not registered!');
 
     //2.
     const matchPassword = bcript.compare(password, foundShop.password);
-    if(!matchPassword) throw new AuthFailureRequestError();
+    if (!matchPassword) throw new AuthFailureRequestError();
 
     // 3.
-    const {PrivateKey, PublicKey} = GenKeyPair;
+    const { PrivateKey, PublicKey } = GenKeyPair;
 
     //4.
-    const tokens: any = await createTokenPair({ userId: foundShop._id, email }, PublicKey, PrivateKey);
+    const tokens: any = await createTokenPair(
+      { userId: foundShop._id, email },
+      PublicKey,
+      PrivateKey
+    );
 
     //5.
 
@@ -52,16 +59,16 @@ class AccessService {
       refreshToken: tokens.refreshToken,
       publicKey: PublicKey,
       privateKey: PrivateKey,
-      userId: foundShop._id
-    })
+      userId: foundShop._id,
+    });
 
     return {
       metadata: {
-        shop: getInfoData({fields: ['_id', 'name', 'email'], object: foundShop}),
+        shop: getInfoData({ fields: ['_id', 'name', 'email'], object: foundShop }),
         tokens,
       },
     };
-  }
+  };
   static signUp = async ({ name, email, password }: SignupProperty) => {
     // step1: check email exists?
     const hodelShop = await shopModel.findOne({ email }).lean();
@@ -86,7 +93,7 @@ class AccessService {
         userId: newShop._id,
         publicKey,
         privateKey,
-        refreshToken: ''
+        refreshToken: '',
       });
       if (!keyStore) {
         throw new BadRequestError('keyStore error!');

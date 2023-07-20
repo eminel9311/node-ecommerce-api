@@ -13,6 +13,4 @@ const findByEmail = async ({
   return await shopModel.findOne({ email }).select(select).lean();
 };
 
-export {
-  findByEmail
-}
+export { findByEmail };

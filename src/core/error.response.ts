@@ -43,7 +43,6 @@ class NotFoundRequestError extends ErrorResponse {
   }
 }
 
-
 class AuthFailureRequestError extends ErrorResponse {
   constructor(
     message = HttpStatusCode.ReasonPhrases.UNAUTHORIZED,
@@ -59,5 +58,5 @@ export {
   BadRequestError,
   ForbindenRequestError,
   NotFoundRequestError,
-  AuthFailureRequestError
+  AuthFailureRequestError,
 };
