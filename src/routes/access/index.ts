@@ -1,4 +1,4 @@
-import { asyncHandler } from '../../auth/checkAuth';
+import { asyncHandler } from '../../helpers/handler.request';
 import AccessController from '../../controllers/access.controller';
 import express from 'express';
 

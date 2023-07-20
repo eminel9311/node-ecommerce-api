@@ -1,7 +1,7 @@
 import keytokenModel from '../models/keytoken.model';
-
+import { Types } from 'mongoose';
 interface props {
-  userId: any;
+  userId: Types.ObjectId;
   publicKey: string;
   privateKey: string;
   refreshToken: string;
@@ -31,6 +31,10 @@ class KeyTokenService {
       return error;
     }
   };
+
+  static findByUserId = async (userId: string) => {
+    return await keytokenModel.findOne({user: new Types.ObjectId(userId)}).lean();
+  }
 }
 
 export default KeyTokenService;
