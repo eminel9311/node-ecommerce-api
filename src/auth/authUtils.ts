@@ -1,5 +1,5 @@
 import JWT from 'jsonwebtoken';
-const createTokenPair = async (payload: any, publicKey: any, privateKey: any) => {
+const createTokenPair = async (payload: any, publicKey:string, privateKey: string) => {
   try {
     // access token
     const accessToken = JWT.sign(payload, publicKey, {

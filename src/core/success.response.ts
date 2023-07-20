@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import { HttpStatusCode } from '../httpStatusCode/httpStatusCode';
+import { HttpStatusCode } from '../utils';
 
 interface responseProperty {
-  message: string;
+  message?: string;
   statusCode?: number;
   reasonStatusCode?: string;
   metadata: object;
@@ -39,7 +39,7 @@ class OK extends SuccessResponse {
 class CREATED extends SuccessResponse {
   options: object;
   constructor({
-    options={},
+    options = {},
     message,
     statusCode = HttpStatusCode.StatusCodes.CREATED,
     reasonStatusCode = HttpStatusCode.ReasonPhrases.CREATED,
@@ -50,4 +50,4 @@ class CREATED extends SuccessResponse {
   }
 }
 
-export { OK, CREATED };
+export { SuccessResponse, OK, CREATED };

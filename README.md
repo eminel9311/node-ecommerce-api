@@ -183,10 +183,11 @@ global.intervalIds = listIntervalId;
 
 Xem thêm tại đây: https://bobbyhadz.com/blog/typescript-declare-global-variable
 
-
 ## NOTICE 4
-1. Custom error response 
-Để custom được error response đầu tiên phải viết handle ở phía dưới route
+
+1. Custom error response
+   Để custom được error response đầu tiên phải viết handle ở phía dưới route
+
 ```TypeScript
 // handling error app.ts
 app.use((_req: Request, _res: Response, next: NextFunction) => {
@@ -195,6 +196,7 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
 });
 
 ```
+
 Đoạn code trên là 1 middleware tức là nếu thành công thì đi tiếp còn không thì làm gì tiếp theo.
 Dưới đây là hàm để quản lý các error
 
@@ -209,8 +211,10 @@ app.use((error: ErrorResponse, _req: Request, _res: Response, _next: NextFunctio
   });
 });
 ```
+
 2. Tiếp theo viết class để xử lý các error
-Vì Error được nodejs hỗ trợ sẵn nên chúng ta kế thừa nó để viết các hàm handle custom của chúng ta
+   Vì Error được nodejs hỗ trợ sẵn nên chúng ta kế thừa nó để viết các hàm handle custom của chúng ta
+
 ```TypeScript
 class ErrorResponse extends Error {
   status: number;
@@ -220,7 +224,9 @@ class ErrorResponse extends Error {
   }
 }
 ```
+
 Các hàm handle các lỗi khác nhau sẽ kế thừa `ErrorResponse` ở phía trên
+
 ```TypeScript
 class ConflictRequestError extends ErrorResponse {
   constructor(
@@ -231,7 +237,9 @@ class ConflictRequestError extends ErrorResponse {
   }
 }
 ```
+
 3. Để sử dụng các method handle error chỉ cần khai báo và sử dụng như sau
+
 ```TypeScript
 import { BadRequestError, ConflictRequestError } from '../core/error.response';
 
@@ -239,7 +247,9 @@ if (hodelShop) {
   throw new ConflictRequestError('Shop already registered!');
 }
 ```
+
 4. Tuy nhiên nếu code như trên nếu gặp lỗi thì app sẽ bị ném thẳng ra và dừng app, rất nguy hiểm vì vậy cần xử lý thêm để bắt được throw thì catch nó và in ra lỗi.Viết thêm 1 middleware để bao hàm xử lý throw ra lỗi như sau:
+
 ```TypeScript
 const asyncHandler = (fn: RequestHandler) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -247,7 +257,9 @@ const asyncHandler = (fn: RequestHandler) => {
   };
 };
 ```
+
 ở router access thêm đoạn code để handle throw như sau
+
 ```TypeScript
 import { asyncHandler } from '../../auth/checkAuth';
 
@@ -256,8 +268,11 @@ accessRoute.post('/shop/signup', asyncHandler(AccessController.signUp));
 ```
 
 ## NOTICE 5
+
 1. Để custom success response ta làm như sau:
+
 - Tạo 1 class để handle các loại success
+
 ```TypeScript
 class SuccessResponse {
   message: string;
@@ -285,11 +300,12 @@ class SuccessResponse {
 
 Khi phương thức send được gọi, nó sẽ thực hiện hai việc:
 
-+ `res.status(this.status)`: Đặt mã trạng thái của phản hồi HTTP bằng giá trị của thuộc tính status trong đối tượng SuccessResponse. Điều này xác định mã trạng thái của phản hồi HTTP, ví dụ: 200 cho thành công, 404 cho không tìm thấy, vv.
+- `res.status(this.status)`: Đặt mã trạng thái của phản hồi HTTP bằng giá trị của thuộc tính status trong đối tượng SuccessResponse. Điều này xác định mã trạng thái của phản hồi HTTP, ví dụ: 200 cho thành công, 404 cho không tìm thấy, vv.
 
-+ `.json(this)`: Chuyển đối tượng SuccessResponse thành chuỗi JSON và gửi nó lại cho client thông qua phản hồi HTTP. Điều này cho phép client nhận được thông tin từ đối tượng SuccessResponse, bao gồm message, status, và metadata, dưới dạng dữ liệu JSON.
+- `.json(this)`: Chuyển đối tượng SuccessResponse thành chuỗi JSON và gửi nó lại cho client thông qua phản hồi HTTP. Điều này cho phép client nhận được thông tin từ đối tượng SuccessResponse, bao gồm message, status, và metadata, dưới dạng dữ liệu JSON.
 
 2. Viết riêng từng phương thức để xử lý các trường hợp success
+
 ```TypeScript
 class CREATED extends SuccessResponse {
   options: object;
@@ -306,7 +322,9 @@ class CREATED extends SuccessResponse {
 }
 
 ```
+
 3. Ở controller thì khai báo và sử dụng như sau
+
 ```TypeScript
 import { CREATED } from '../core/success.response';
 

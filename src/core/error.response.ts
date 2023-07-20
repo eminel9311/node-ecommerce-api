@@ -1,4 +1,4 @@
-import { HttpStatusCode } from '../httpStatusCode/httpStatusCode';
+import { HttpStatusCode } from '../utils';
 class ErrorResponse extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -43,10 +43,21 @@ class NotFoundRequestError extends ErrorResponse {
   }
 }
 
+
+class AuthFailureRequestError extends ErrorResponse {
+  constructor(
+    message = HttpStatusCode.ReasonPhrases.UNAUTHORIZED,
+    StatusCode = HttpStatusCode.StatusCodes.UNAUTHORIZED
+  ) {
+    super(message, StatusCode);
+  }
+}
+
 export {
   ErrorResponse,
   ConflictRequestError,
   BadRequestError,
   ForbindenRequestError,
   NotFoundRequestError,
+  AuthFailureRequestError
 };
