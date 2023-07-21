@@ -87,7 +87,6 @@ class AccessService {
       // created privateKey, publicKey
       const privateKey = crypto.randomBytes(64).toString('hex');
       const publicKey = crypto.randomBytes(64).toString('hex');
-      console.log('rawKey', { privateKey, publicKey });
 
       const keyStore = await KeyTokenService.createKeyToken({
         userId: newShop._id,
@@ -101,20 +100,21 @@ class AccessService {
 
       // create token pair
       const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey);
-      console.log(`Created Token succees::`, tokens);
       return {
-        code: 201,
         metadata: {
-          shop: newShop,
+          shop: getInfoData({ fields: ['_id', 'name', 'email'], object: newShop}),
           tokens,
         },
       };
     }
     return {
-      code: 200,
       metadata: null,
     };
   };
+  static logout = async (keyStore: any) => {
+    const delKey: any = KeyTokenService.removeKeyById(keyStore._id);
+    return delKey;
+  }
 }
 
 export default AccessService;

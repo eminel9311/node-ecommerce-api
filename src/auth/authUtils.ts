@@ -1,7 +1,8 @@
+/* eslint-disable no-useless-catch */
 import { NextFunction, Request, Response } from 'express';
 import { asyncHandler } from '../helpers/handler.request';
 import JWT from 'jsonwebtoken';
-import { AuthFailureRequestError } from '../core/error.response';
+import { AuthFailureRequestError, NotFoundRequestError } from '../core/error.response';
 import KeyTokenService from '../services/keyToken.service';
 
 const HEADER = {
@@ -32,7 +33,7 @@ const createTokenPair = async (payload: any, publicKey: string, privateKey: stri
     return error;
   }
 };
-const authentication = asyncHandler(async(req: Request, res: Response, next: NextFunction) =>{
+const authentication = asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   /*
   1 - check userId missing?
   2 - get accessToken
@@ -42,13 +43,25 @@ const authentication = asyncHandler(async(req: Request, res: Response, next: Nex
   6 - return next()
   */
 
-
   //1.
   const userId: any = req.headers[HEADER.CLIENT_ID];
-  if(!userId) throw new AuthFailureRequestError('Invalid Reques');
+  if (!userId) throw new AuthFailureRequestError('Invalid Request userId');
 
   //2.
-  const keyStore = await KeyTokenService.findByUserId(userId);
+  const keyStore: any = await KeyTokenService.findByUserId(userId);
+  if (!keyStore) throw new NotFoundRequestError('Not found keyStore');
 
-})
-export { createTokenPair };
+  //3.
+  const accessToken: any = req.headers[HEADER.AUTHORIZATION];
+  if (!accessToken) throw new AuthFailureRequestError('Invalid Request At');
+
+  try {
+    const decodeUser: any = JWT.verify(accessToken, keyStore.publicKey);
+    if (userId !== decodeUser.userId) throw new AuthFailureRequestError('Invalid Userid');
+    req.keyStore = keyStore;
+    return next();
+  } catch (error: any) {
+    throw error;
+  }
+});
+export { createTokenPair, authentication };

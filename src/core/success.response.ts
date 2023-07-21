@@ -5,7 +5,7 @@ interface responseProperty {
   message?: string;
   statusCode?: number;
   reasonStatusCode?: string;
-  metadata: object;
+  metadata: any;
   options?: object;
 }
 

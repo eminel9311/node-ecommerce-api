@@ -15,7 +15,6 @@ interface CustomRequest extends Request {
   };
 }
 
-
 const apiKey = async (req: CustomRequest, _res: Response, next: NextFunction) => {
   const key = req.headers[HEADER.API_KEY]?.toString();
   if (!key) {
