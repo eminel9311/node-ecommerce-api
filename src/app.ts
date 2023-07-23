@@ -46,6 +46,7 @@ app.use((error: ErrorResponse, _req: Request, _res: Response, _next: NextFunctio
   return _res.status(statusCode).json({
     status: 'error',
     code: statusCode,
+    error: error.stack,
     message: error.message || 'Internal Server Error',
   });
 });

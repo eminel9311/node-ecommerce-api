@@ -7,9 +7,11 @@ import {
   BadRequestError,
   ConflictRequestError,
   AuthFailureRequestError,
+  ForbindenRequestError,
 } from '../core/error.response';
 import { findByEmail } from './shop.service';
 import { GenKeyPair, getInfoData } from '../utils';
+import { Types } from 'mongoose';
 
 const roleShop = {
   SHOP: 'SHOP',
@@ -102,7 +104,7 @@ class AccessService {
       const tokens = await createTokenPair({ userId: newShop._id, email }, publicKey, privateKey);
       return {
         metadata: {
-          shop: getInfoData({ fields: ['_id', 'name', 'email'], object: newShop}),
+          shop: getInfoData({ fields: ['_id', 'name', 'email'], object: newShop }),
           tokens,
         },
       };
@@ -114,7 +116,44 @@ class AccessService {
   static logout = async (keyStore: any) => {
     const delKey: any = KeyTokenService.removeKeyById(keyStore._id);
     return delKey;
-  }
+  };
+  static handlerRefreshToken = async ({ refreshToken, user, keyStore }: any) => {
+    const { userId, email } = user;
+    // if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+    //   await KeyTokenService.deleteKeyByUserId(userId);
+    //   throw new ForbindenRequestError('Something wrong happend !! please re-login');
+    // }
+    if (keyStore.refreshToken !== refreshToken)
+      throw new AuthFailureRequestError('Shop not registered');
+
+    const foundShop: any = await findByEmail({ email });
+
+    if (!foundShop) throw new AuthFailureRequestError('Shop not registered');
+
+    // create new token pair
+    const tokens: any = await createTokenPair(
+      { userId, email },
+      keyStore.publicKey,
+      keyStore.privateKey
+    );
+    console.log('keyyyy', keyStore.refreshTokensUsed)
+    // update token
+    const filter = { user: userId };
+    const update = {
+      publicKey: keyStore.publicKey,
+      privateKey: keyStore.privateKey,
+      refreshTokensUsed: [...keyStore.refreshTokensUsed, refreshToken] ,
+      refreshToken,
+    };
+    const options = { upsert: true, new: true };
+    await KeyTokenService.updateKeyStore({ filter, update, options });
+
+
+    return {
+      user,
+      tokens,
+    };
+  };
 }
 
 export default AccessService;

@@ -1,0 +1,8 @@
+
+## login
+@url_dev=http://localhost:3055/v1/api
+POST {{url_dev}}/shop/refreshToken
+Content-Type: application/json
+x-api-key: 85e05807754f4cc327bab0a7d3b1950cf621990cf99f29b5e988007a24f4a772df497337e236c3d0be1fd57d46592f0722b579b79543bc4a75068746b7f1827b
+x-client-id: 64b8ed7e0517dcb5fd7fca13
+x-rtoken-id: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGI4ZWQ3ZTA1MTdkY2I1ZmQ3ZmNhMTMiLCJlbWFpbCI6InNob3BxdWFuYmgxQGdtYWlsLmNvbSIsImlhdCI6MTY5MDEwNjA0MywiZXhwIjoxNjkwNzEwODQzfQ.E0_cuppmEtHbaSBdM6BOeI2D2WFj0o9OHEYbQwmuCWw
